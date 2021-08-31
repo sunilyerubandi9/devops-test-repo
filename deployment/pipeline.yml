@@ -17,14 +17,14 @@ stages:
         command: publish  #The publish command does a restore, build and creates a zip file so no need to add extra steps
         publishWebProjects: true
         zipAfterPublish: false
-        projects: '**/BasicCoreApp/*.csproj'
-        arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)/application'
+        projects: '**/*.jar'
+        arguments: '$(build.artifactstagingdirectory)'
 
     - task: DotNetCoreCLI@2
       displayName: Test
       inputs:
         command: test #Don't forget to test!
-        projects: '**/*.Tests.csproj'
+        projects: '**/TEST-*.xml'
         arguments: '--configuration $(BuildConfiguration)'
 
     - task: ArchiveFiles@2
