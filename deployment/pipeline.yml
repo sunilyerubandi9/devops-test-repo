@@ -1,0 +1,13 @@
+stages:
+- stage: 'Build_Stage' #Stage name cannot have spaces
+  displayName: 'Build' #Name displayed when viewing in Azure DevOps
+  jobs:
+  - job: 'Build_Job' #Job name cannot have spaces
+    displayName: 'Application Build' #Name displayed when viewing in Azure DevOps
+    pool:
+      vmImage: 'windows-latest' #See available agent images: https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops#use-a-microsoft-hosted-agent
+    steps:
+    - task: DotNetCoreInstaller@1
+      displayName: 'Use DotNet Core SDK'
+      inputs:
+        version: 3.x
