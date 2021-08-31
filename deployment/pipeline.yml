@@ -1,12 +1,24 @@
 stages:
 - stage: 'Build_Stage' #Stage name cannot have spaces
   displayName: 'Build' #Name displayed when viewing in Azure DevOps
+  trigger:
+    branches:
+      include:
+      - main
+  resources:
+    repositories:
+    - repository: self
+      type: git
+      ref: main 
+      
   jobs:
   - job: 'Build_Job' #Job name cannot have spaces
     displayName: 'Application Build' #Name displayed when viewing in Azure DevOps
     pool:
-      vmImage: 'windows-latest' #See available agent images: https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops#use-a-microsoft-hosted-agent
+      vmImage: 'vs2017-win2016' #See available agent images: https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops#use-a-microsoft-hosted-agent
     steps:
+    - checkout: self
+      clean: true
     - task: Maven@3
       inputs:
         mavenPomFile: 'pom.xml'
@@ -24,16 +36,50 @@ stages:
     - task: PublishBuildArtifacts@1
       displayName: Publish Artifact
       inputs:
-        PathtoPublish: $(Build.ArtifactStagingDirectory)    
+        PathtoPublish: $(Build.ArtifactStagingDirectory)
+
+    - task: ServiceNow-DevOps-Agent-Artifact-Registration@1
+      displayName: ServiceNow DevOps Agent Artifact Registration
+      inputs:
+        connectedServiceName: 9f619f89-cab5-46c2-b7ef-44e447902f75
+        artifactsPayload: >-
+          {
+             "artifacts": [
+                {
+                   "name": "YAMLPipelineBuild",
+                   "version": "1.$(Build.BuildId)",
+                   "semanticVersion": "1.$(Build.BuildId).0",
+                   "repositoryName": "MSNAutomation"
+                }
+          ]
+          } 
 
 - stage: 'Test_Stage' #Stage name cannot have spaces
   displayName: 'Test' #Name displayed when viewing in Azure DevOps
   jobs:
   - job: 'Test_Job' #Job name cannot have spaces
     displayName: 'Application Test' #Name displayed when viewing in Azure DevOps
+    pool:
+      vmImage: 'vs2017-win2016' #See available agent images: https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops#use-a-microsoft-hosted-agent
     steps:
     - task: PublishTestResults@2
       displayName: Publish Test Results
       inputs:
         testResultsFiles: '**/TEST-*.xml'
         searchFolder: $(System.DefaultWorkingDirectory)
+
+    - task: ServiceNow-DevOps-Agent-Artifact-Registration@1
+      displayName: ServiceNow DevOps Agent Artifact Registration
+      inputs:
+        connectedServiceName: 9f619f89-cab5-46c2-b7ef-44e447902f75
+        artifactsPayload: >-
+          {
+             "artifacts":[
+                {
+                   "name":"YAMLPipelineTest",
+                   "version":"1.$(Build.BuildId)",
+                   "semanticVersion":"1.$(Build.BuildId).0",
+                   "repositoryName":"MSNAutomation"
+                }
+             ]
+          }        
