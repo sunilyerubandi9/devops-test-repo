@@ -1,16 +1,6 @@
 stages:
 - stage: 'Build_Stage' #Stage name cannot have spaces
   displayName: 'Build' #Name displayed when viewing in Azure DevOps
-  trigger:
-    branches:
-      include:
-      - main
-  resources:
-    repositories:
-    - repository: self
-      type: git
-      ref: main 
-      
   jobs:
   - job: 'Build_Job' #Job name cannot have spaces
     displayName: 'Application Build' #Name displayed when viewing in Azure DevOps
