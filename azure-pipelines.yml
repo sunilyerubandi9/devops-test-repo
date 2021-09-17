@@ -1,0 +1,83 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+ - none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+    - stage: Astage1
+      jobs:
+          - job: 'j1'
+            steps:
+            - task: Bash@3
+              inputs:
+                targetType: 'inline'
+                script: |
+                  # Write your commands here                  
+                  echo 'Hello world.'
+
+    - stage: Bstage2
+      jobs:
+          - job: 'j1'
+            steps:
+            - task: Bash@3
+              inputs:
+                targetType: 'inline'
+                script: |
+                  # Write your commands here                  
+                  echo 'Hello world'
+            - task: ServiceNow-DevOps-Agent-Artifact-Registration@1
+              inputs:
+                connectedServiceName: 'empmagunuru3-PPM-ServiceNow DevOps Service Connection'
+                artifactsPayload: |
+                  {
+                     "artifacts": [
+                        {
+                           "name": "ppm_artifact.jar",
+                           "version": "1.$(Build.BuildId)",
+                           "semanticVersion": "1.$(Build.BuildId).0",
+                           "repositoryName": "ppm_artifact_repo"
+                        }
+                     ]
+                  }
+    - stage: Cstage3
+      jobs:
+          - job: 'j1'
+            steps:
+            - task: Bash@3
+              inputs:
+                targetType: 'inline'
+                script: |
+                  # Write your commands here                  
+                  echo 'Hello world'
+
+
+    - stage: Dstage4
+      jobs:
+          - job: 'j1'
+            steps:
+            - task: Bash@3
+              inputs:
+                targetType: 'inline'
+                script: |
+                  # Write your commands here                  
+                  echo 'Hello world'
+            - task: ServiceNow-DevOps-Agent-Package-Registration@1
+              inputs:
+                connectedServiceName: 'empmagunuru3-PPM-ServiceNow DevOps Service Connection'
+                packageName: 'ppm pipeline package'
+                artifactsPayload: |
+                  {
+                      "artifacts": [
+                      {
+                          "name": "ppm_artifact.jar",
+                          "repositoryName": "ppm_artifact_repo",
+                          "version": "1.$(build.buildId)",
+                          "currentBuildInfo": "true"
+                      }]
+                  }
