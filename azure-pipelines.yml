@@ -42,21 +42,25 @@ stages:
                 script: |
                   # Write your commands here                  
                   echo 'Hello world'
-            - task: ServiceNow-DevOps-Agent-Artifact-Registration@1
+            - task: ServiceNow-DevOps-Server-Artifact-Registration@1
               inputs:
                 connectedServiceName: 'emprpolanki2-DevOpsADOProject2-ServiceNow DevOps Service Connection'
-                artifactsPayload: |
+                artifactRegistrationPayload: |
                   {
                     "artifacts": [
                         {
-                          "name": "msnautomation-deploy-agent-artifact.jar",
-                          "version": "1.$(Build.BuildId)",
-                          "semanticVersion": "1.$(Build.BuildId).0",
+                          "name": "msnautomation-deploy-server-artifact.jar",
+                          "version": "1.$(build.buildId)",
+                          "semanticVersion": "1.$(build.buildId).0",
                           "repositoryName": "MSNAutomation"
                         }
-                    ]
+                    ],
+                    "pipelineName": "$(system.teamProject)/$(build.definitionName)",
+                    "taskExecutionNumber": "$(build.buildId)",
+                    "stageName": "$(system.jobDisplayName)",
+                  "attemptNumber": "$(system.jobAttempt)",
+                    "branchName": "$(build.sourceBranchName)"
                   }
-
     - stage: Prod
       jobs:
           - job: 'runScript'
