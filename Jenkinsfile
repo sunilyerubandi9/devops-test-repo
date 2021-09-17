@@ -27,23 +27,14 @@ pipeline {
 				echo 'dev branch deployment ...'
 				snDevOpsStep()
 				snDevOpsArtifact(artifactsPayload:"""{
-				"name": "development_artifact.jar",
 				"artifacts": [
 				{
 					"name": "development_artifact.jar",
 					"repositoryName": "jenkins-repo",
-					"version": "1.$(build.buildId)",
-					"pipelineName":"$(system.teamProject)/$(build.definitionName)",
-					"taskExecutionNumber":"$(build.buildId)",
-					"stageName":"$(system.jobDisplayName)",
-					"attemptNumber":"$(system.jobAttempt)",
-					"branchName":"$(build.sourceBranchName)"
+					"version": "1.1",
+					"semanticVersion": "1.1.0",
 				}],
-				"pipelineName":"$(system.teamProject)/$(build.definitionName)",
-				"taskExecutionNumber":"$(build.buildId)",
-				"stageName":"$(system.jobDisplayName)",
-				"attemptNumber":"$(system.jobAttempt)",
-				"branchName":"$(build.sourceBranchName)"
+				"stageName":"Deploy for development",
 				}""")
 				sleep 5
 			}
