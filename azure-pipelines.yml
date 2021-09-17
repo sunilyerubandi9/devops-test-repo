@@ -3,10 +3,6 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-
-
-
-
 trigger:
  - none
 
@@ -14,9 +10,9 @@ pool:
   vmImage: 'ubuntu-latest'
 
 stages:
-    - stage: Astage1
+    - stage: Build
       jobs:
-          - job: 'j1'
+          - job: 'runScript'
             steps:
             - task: Bash@3
               inputs:
@@ -25,33 +21,9 @@ stages:
                   # Write your commands here                  
                   echo 'Hello world.'
 
-    - stage: Bstage2
+    - stage: Test
       jobs:
-          - job: 'j1'
-            steps:
-            - task: Bash@3
-              inputs:
-                targetType: 'inline'
-                script: |
-                  # Write your commands here                  
-                  echo 'Hello world'
-            - task: ServiceNow-DevOps-Agent-Artifact-Registration@1
-              inputs:
-                connectedServiceName: 'emprpolanki2-DevOpsADOProject2-ServiceNow DevOps Service Connection'
-                artifactsPayload: |
-                  {
-                     "artifacts": [
-                        {
-                           "name": "msnautomation_artifact.jar",
-                           "version": "1.$(Build.BuildId)",
-                           "semanticVersion": "1.$(Build.BuildId).0",
-                           "repositoryName": "MSNAutomation"
-                        }
-                     ]
-                  }
-    - stage: Cstage3
-      jobs:
-          - job: 'j1'
+          - job: 'runScript'
             steps:
             - task: Bash@3
               inputs:
@@ -60,10 +32,9 @@ stages:
                   # Write your commands here                  
                   echo 'Hello world'
 
-
-    - stage: Dstage4
+    - stage: Deploy
       jobs:
-          - job: 'j1'
+          - job: 'runScript'
             steps:
             - task: Bash@3
               inputs:
@@ -71,6 +42,7 @@ stages:
                 script: |
                   # Write your commands here                  
                   echo 'Hello world'
+
             - task: ServiceNow-DevOps-Agent-Package-Registration@1
               inputs:
                 connectedServiceName: 'emprpolanki2-DevOpsADOProject2-ServiceNow DevOps Service Connection'
@@ -85,3 +57,14 @@ stages:
                           "currentBuildInfo": "true"
                       }]
                   }
+
+    - stage: Prod
+      jobs:
+          - job: 'runScript'
+            steps:
+            - task: Bash@3
+              inputs:
+                targetType: 'inline'
+                script: |
+                  # Write your commands here                  
+                  echo 'Hello world'
