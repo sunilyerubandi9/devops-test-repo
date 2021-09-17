@@ -42,20 +42,19 @@ stages:
                 script: |
                   # Write your commands here                  
                   echo 'Hello world'
-
-            - task: ServiceNow-DevOps-Agent-Package-Registration@1
+            - task: ServiceNow-DevOps-Agent-Artifact-Registration@1
               inputs:
                 connectedServiceName: 'emprpolanki2-DevOpsADOProject2-ServiceNow DevOps Service Connection'
-                packageName: 'msnautomation pipeline package'
                 artifactsPayload: |
                   {
-                      "artifacts": [
-                      {
-                          "name": "msnautomation_artifact.jar",
-                          "repositoryName": "MSNAutomation",
-                          "version": "1.$(build.buildId)",
-                          "currentBuildInfo": "true"
-                      }]
+                    "artifacts": [
+                        {
+                          "name": "msnautomation-deploy-agent-artifact.jar",
+                          "version": "1.$(Build.BuildId)",
+                          "semanticVersion": "1.$(Build.BuildId).0",
+                          "repositoryName": "MSNAutomation"
+                        }
+                    ]
                   }
 
     - stage: Prod
