@@ -2,7 +2,6 @@ package com.msn.MSNAutomation;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -49,7 +48,4 @@ public class AppTest
     public void tearDown() {
     	System.out.println("Added tearDown() method");
     }
-    
-    @Rule
-    public static String IMPORT_COMMIT = "";
 }
