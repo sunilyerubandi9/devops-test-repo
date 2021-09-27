@@ -56,11 +56,7 @@ stages:
                         }
                       ]
                   }            
-            - task: ServiceNow-DevOps-Server-Change-Acceleration@1
-              inputs:
-                connectedServiceName: 'emprpolanki4-DevOpsADOProject4-ServiceNow DevOps Service Connection'
-                UpstreamJob: 'Job_Test'
-                
+
     - stage: Prod
       jobs:
           - job: 'Job_Prod'
