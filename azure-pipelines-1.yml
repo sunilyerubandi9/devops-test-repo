@@ -33,6 +33,7 @@ stages:
                   echo 'Hello world'
 
     - stage: Deploy
+      pool: server
       jobs:
           - job: 'Job_Deploy'
             steps:
