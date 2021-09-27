@@ -12,7 +12,7 @@ pool:
 stages:
     - stage: Build
       jobs:
-          - job: 'runScript'
+          - job: 'Job_Build'
             steps:
             - task: Bash@3
               inputs:
@@ -23,7 +23,7 @@ stages:
 
     - stage: Test
       jobs:
-          - job: 'runScript'
+          - job: 'Job_Test'
             steps:
             - task: Bash@3
               inputs:
@@ -34,7 +34,7 @@ stages:
 
     - stage: Deploy
       jobs:
-          - job: 'runScript'
+          - job: 'Job_Deploy'
             steps:
             - task: Bash@3
               inputs:
@@ -55,10 +55,15 @@ stages:
                             "repositoryName": "MSNAutomation"
                         }
                       ]
-                  }
+                  }            
+            - task: ServiceNow-DevOps-Server-Change-Acceleration@1
+              inputs:
+                connectedServiceName: 'emprpolanki4-DevOpsADOProject4-ServiceNow DevOps Service Connection'
+                UpstreamJob: 'Job_Test'
+                
     - stage: Prod
       jobs:
-          - job: 'runScript'
+          - job: 'Job_Prod'
             steps:
             - task: Bash@3
               inputs:
