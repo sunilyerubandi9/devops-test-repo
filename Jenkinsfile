@@ -24,7 +24,7 @@ pipeline {
 				branch 'development'
 			}
 			steps {
-				echo 'dev branch deployment ...'
+				echo 'dev branch deployment...'
 				snDevOpsStep()
 				snDevOpsArtifact(artifactsPayload:"""{
 				"artifacts": [
