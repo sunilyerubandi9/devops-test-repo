@@ -28,6 +28,7 @@ pipeline {
 			post {
        		   always {
           		    junit '**/target/surefire-reports/*.xml'
+			    error("Aborting the testing stage")
           		    echo 'Testing complete'
 			  }
         	}
@@ -39,6 +40,7 @@ pipeline {
                 echo 'Packaging..'
                 snDevOpsPackage(name: "${pkgName}-${env.BUILD_NUMBER}", artifactsPayload: """{"artifacts":[{"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}", "repositoryName": "${repoName}"}], "branchName":"master"}""")
                 //snDevOpsChange()
+		
             }
         }
 		stage('UAT') {
