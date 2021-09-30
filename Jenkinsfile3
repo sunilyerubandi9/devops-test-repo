@@ -28,7 +28,7 @@ pipeline {
                 echo "GIT branch is ${env.GIT_BRANCH}"
                 echo "globalprops -- ${env.snartifacttoolId} -- ${env.snhost} -- ${env.snuser} -- ${env.snpassword} "
 
-                snDevOpsArtifact(artifactsPayload:"""{"artifacts": [{"name": "devops_pipeline_demo.jar","version": "${version}","semanticVersion": "${semanticVersion}","repositoryName": "devops_pipeline_demo"}],"stageName": "build"}""")
+                snDevOpsArtifact(artifactsPayload:"""{"artifacts": [{"name": "devops_pipeline_build_artifact.jar","version": "${version}","semanticVersion": "${semanticVersion}","repositoryName": "devops_pipeline_repo"}],"stageName": "build"}""")
             }
         }
 
@@ -47,9 +47,9 @@ pipeline {
 
         stage("stage") {
             steps {
-                snDevOpsArtifact(artifactsPayload:"""{"artifacts": [{"name": "devops_pipeline_demo2.jar","version": "${version}","semanticVersion": "${semanticVersion}","repositoryName": "devops_pipeline_demo"}],"stageName": "stage"}""")
+                snDevOpsArtifact(artifactsPayload:"""{"artifacts": [{"name": "devops_pipeline_stage_artifact.jar","version": "${version}","semanticVersion": "${semanticVersion}","repositoryName": "devops_pipeline_repo"}],"stageName": "stage"}""")
                 sleep 5
-                snDevOpsPackage(name: "balu-package", artifactsPayload:"""{"artifacts": [{"name": "devops_pipeline_demo2.jar","version": "${version}","semanticVersion": "${semanticVersion}","repositoryName": "devops_pipeline_demo"}],"stageName": "stage"}""")
+                snDevOpsPackage(name: "devops_pipeline_package", artifactsPayload:"""{"artifacts": [{"name": "devops_pipeline_stage_artifact.jar","version": "${version}","semanticVersion": "${semanticVersion}","repositoryName": "devops_pipeline_repo"}],"stageName": "stage"}""")
                 sleep 5
                 snDevOpsChange()
                 echo "deploy in prod"
