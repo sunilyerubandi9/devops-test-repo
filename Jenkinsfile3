@@ -51,7 +51,7 @@ pipeline {
                 sleep 5
                 snDevOpsPackage(name: "devops_pipeline_package", artifactsPayload:"""{"artifacts": [{"name": "devops_pipeline_stage_artifact.jar","version": "${version}","semanticVersion": "${semanticVersion}","repositoryName": "devops_pipeline_repo"}],"stageName": "stage"}""")
                 sleep 5
-                //snDevOpsChange()
+                snDevOpsChange()
                 echo "deploy in prod"
             }
         }
