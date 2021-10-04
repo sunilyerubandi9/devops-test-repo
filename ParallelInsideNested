@@ -1,0 +1,38 @@
+pipeline {
+    agent none
+    stages {
+        stage('Sequential Stage 1') {
+            steps {
+                echo 'Sequential Stage 1'
+            }
+        }
+        stage('Nested Parent') {
+            stages {
+                stage('Nested Child 1') {
+                    parallel {
+                        stage('Nested Parallel Child 1.1') {
+                            steps {
+                                echo 'In Nested Parallel Child 1.1'
+                            }
+                        }
+                        stage('Nested Parallel Child 1.2') {
+                            steps {
+                                echo 'In Nested Parallel Child 1.2'
+                            }
+                        }
+                    }
+                }
+                stage('Nested Child 2') {
+                    steps {
+                        echo 'In Nested Child 2'
+                    }
+                }
+            }
+        }
+        stage('Sequential Stage 3') {
+            steps {
+                echo 'Sequential Stage 3'
+            }
+        }
+    }
+}
