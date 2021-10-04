@@ -97,7 +97,8 @@ def sonarSummaries() {
    
 	//}
 	
-    withSonarQubeEnv('sonarQube_local') {
+    //withSonarQubeEnv('sonarQube_local') {
+    withSonarQubeEnv() {
        	sh '${SCANNER_HOME}/bin/sonar-scanner -Dproject.settings=${SCANNER_HOME}/conf/qa-sonar-scanner.properties'
    		// sh '${SCANNER_HOME}/bin/sonar-scanner -Dproject.settings=${SCANNER_HOME}/conf/sonar-scanner.properties'
 	}
