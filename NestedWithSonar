@@ -1,0 +1,105 @@
+def semanticVersion = "${env.BUILD_NUMBER}.0.0"
+def packageName = "devops_pipeline_demo_${env.BUILD_NUMBER}"
+def version = "${env.BUILD_NUMBER}.0"
+def artifactname = "sp-boot-app.jar"
+def repoName = "sp-boot-app-repo"
+
+pipeline {
+   agent any
+   tools {
+        maven 'Maven'
+    }
+    environment {
+	 SCANNER_HOME = tool 'sonarScanner'
+	}
+	
+    stages {
+		  stage('Build1') {
+			    stages {
+				      stage("Build1.1") {
+				        steps {
+				          echo"build 1.1 executed"
+				          snDevOpsChange()
+				          sonarSummaries()
+				        } 
+				      }// end of build 1.1
+			      
+			    }// end of stages
+		    
+
+		    
+		  }// end of build1
+		
+			stage('Test1') {
+					  parallel 
+					  {
+						    stage('pTest1.1') {
+						    	// Nested stage inside parallel
+							    stages {
+								      stage("nested_inside_parallel") {
+												      steps {
+												        echo'nested_inside_parallel'
+												        sh'mvn test'
+												        snDevOpsChange()
+												       
+												      }
+												      post{
+												        success{
+												          echo'Test1.1-success'
+												          junit"**/target/surefire-reports/*.xml"
+												        }
+												      } 
+								      }// end of nested_inside_parallel
+							      
+							    }// end of stages
+						    } // end of ptest1.1
+						    stage('pTest1.2') {
+									      steps {
+									       
+									        //sh'mvn test'
+									        echo'Test1.2 in progress'
+									        snDevOpsChange()
+				          					sonarSummaries()
+									        
+									      }
+						    }// end of ptest1.2
+					    
+					  }// end of parallel
+				}// end of Test1
+				
+		stage('Artifacts'){
+		
+			parallel{
+				
+					stage('create_artifact'){
+						steps {
+               				snDevOpsArtifact(artifactsPayload: """{"artifacts": [{"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}","semanticVersion": "1.${env.BUILD_NUMBER}.0","repositoryName": "${repoName}"}],"branchName":"master"}""")
+	                	}
+	                }
+                
+			    	stage('create_package'){
+				    	steps{
+				    		snDevOpsPackage(name: "${packageName}-${env.BUILD_NUMBER}", artifactsPayload: """{"artifacts":[{"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}", "repositoryName": "${repoName}"}], "branchName":"master"}""")
+				    	}
+			        }
+				} // end of parallel stages
+			
+			}// end of artifacts stage
+		
+			
+	} // end of stages
+} // end of pipeline
+
+def sonarSummaries() {
+
+   //withSonarQubeEnv('Sonar_Cloud') {
+       //sh '${SCANNER_HOME}/bin/sonar-scanner -Dproject.settings=${SCANNER_HOME}/conf/qa-sonar-scanner-cloud.properties'
+   
+	//}
+	
+    withSonarQubeEnv('sonarQube_local') {
+       	sh '${SCANNER_HOME}/bin/sonar-scanner -Dproject.settings=${SCANNER_HOME}/conf/qa-sonar-scanner.properties'
+   		// sh '${SCANNER_HOME}/bin/sonar-scanner -Dproject.settings=${SCANNER_HOME}/conf/sonar-scanner.properties'
+	}
+	
+} // end of def sonarsummaries
