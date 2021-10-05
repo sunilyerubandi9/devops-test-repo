@@ -1,0 +1,81 @@
+pipeline {
+   agent any
+   tools {
+        maven 'Maven'
+    }
+    environment {
+	 SCANNER_HOME = tool 'sonarScanner'
+	}
+    stages {
+    	
+	        stage('S0') {
+	        
+	            parallel {
+	                stage('S0.1') {
+	                	when {
+	            			equals expected: 2, actual: 2
+	        			}
+	                    steps {
+	                    	 snDevOpsChange()
+	                         echo 'S0.1 is executed'
+	                    }
+	                    
+	                }
+	                stage('S0.2') {
+	                	when {
+	            			equals expected: 2, actual: 2
+	        			}
+	                    steps {
+	                       
+	                        //snDevOpsChange()
+	                        sh 'mvn test'
+	                        echo 'S0.2 is executed'
+	                        
+	                    }
+	                    
+	                }
+	            }
+	
+	        }
+	        
+	        stage('S1') {
+	        
+	            parallel {
+	                stage('S1.1') {
+	                	when {
+	            			equals expected: 2, actual: 1
+	        			}
+	                    steps {
+	                    	
+	                         echo 'S1.1 is executed'
+	                    }
+	                    
+	                }
+	                stage('S1.2') {
+	                	when {
+	            			equals expected: 2, actual: 2
+	        			}
+	                    steps {
+	                       
+	                        //snDevOpsChange()
+	                        echo 'S1.2 is executed'
+	                        sonarSummaries()
+	                        
+	                    }
+	                    
+	                }
+	            }
+	
+	        }
+   		}
+	
+}
+
+def sonarSummaries() {
+	
+    withSonarQubeEnv('sonarQube_local') {
+       	sh '${SCANNER_HOME}/bin/sonar-scanner -Dproject.settings=${SCANNER_HOME}/conf/qa-sonar-scanner.properties'
+   		// sh '${SCANNER_HOME}/bin/sonar-scanner -Dproject.settings=${SCANNER_HOME}/conf/sonar-scanner.properties'
+	}
+	
+} // end of def sonarsummaries
