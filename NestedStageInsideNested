@@ -37,7 +37,7 @@ pipeline {
 								          echo"build 1.1.1 executed"
 								          sh 'mvn test'
 				
-								          snDevOpsChange()
+								          //snDevOpsChange()
 								          snDevOpsArtifact(artifactsPayload: """{"artifacts": [{"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}","semanticVersion": "1.${env.BUILD_NUMBER}.0","repositoryName": "${repoName}"}],"stageName": "Build1/Build1.1/Build1.1.1","branchName":"master"}""")
 								          snDevOpsPackage(name: "${packageName}", artifactsPayload: """{"artifacts":[{"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}", "repositoryName": "${repoName}"}],"stageName": "Build1/Build1.1/Build1.1.1", "branchName":"master"}""")
 								          
