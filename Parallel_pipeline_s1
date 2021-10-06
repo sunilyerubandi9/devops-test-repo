@@ -1,0 +1,66 @@
+def semanticVersion = "${env.BUILD_NUMBER}.0.0"
+def packageName = "pkg_${env.BUILD_NUMBER}"
+def version = "${env.BUILD_NUMBER}.0"
+def artifactname = "sp-boot-app.jar"
+def repoName = "repo1"
+
+pipeline {
+   agent any
+   tools {
+        maven 'Maven'
+    }
+    environment {
+	 SCANNER_HOME = tool 'sonarScanner'
+	}
+    stages {
+    	
+	        stage('Build') {
+	        
+	            parallel {
+	                stage('Build.1') {
+	                	when {
+	            			equals expected: 2, actual: 2
+	        			}
+	                    steps {
+	                    	 sleep 10
+	                    	 //snDevOpsChange()
+	                         echo 'Build.1 is executed'
+	                         sh 'mvn test'
+	                    }
+	                    
+	                }
+	                stage('Build.2') {
+	                	when {
+	            			equals expected: 2, actual: 2
+	        			}
+	                    steps {
+	                       
+	                       	//snDevOpsChange()
+	                        echo 'Build.2 is executed'
+	                        //sonarSummaries()
+            				//snDevOpsArtifact(artifactsPayload: """{"artifacts": [{"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}","semanticVersion": "1.${env.BUILD_NUMBER}.0","repositoryName": "${repoName}"}],"stageName": "Build1/Build1.1/Build1.1.1","branchName":"master"}""")
+				            //snDevOpsPackage(name: "${packageName}", artifactsPayload: """{"artifacts":[{"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}", "repositoryName": "${repoName}"}],"stageName": "Build1/Build1.1/Build1.1.1", "branchName":"master"}""")
+	                        
+	                    }
+	                    
+	                }
+	            }
+	
+	        }
+	        
+	       stage('Deploy'){
+	       		steps{
+	       			snDevOpsChange()
+	       		}
+	       }
+   		}
+	
+}
+def sonarSummaries() {
+	
+    withSonarQubeEnv('sonarQube_local') {
+       	sh '${SCANNER_HOME}/bin/sonar-scanner -Dproject.settings=${SCANNER_HOME}/conf/qa-sonar-scanner.properties'
+   		// sh '${SCANNER_HOME}/bin/sonar-scanner -Dproject.settings=${SCANNER_HOME}/conf/sonar-scanner.properties'
+	}
+	
+} // end of def sonarsummaries
