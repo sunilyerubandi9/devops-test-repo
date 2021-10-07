@@ -27,9 +27,6 @@ pipeline {
     stage('STAGE1_PARENT') {
       stages {
         stage('STAGE1_CHILD1') {
-          steps{
-            snDevOpsChange()
-          }
           stages {
             stage('STAGE1_CHILD1.1') {
               steps {
