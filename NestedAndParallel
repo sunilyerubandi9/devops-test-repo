@@ -1,0 +1,75 @@
+def semanticVersion = "${env.BUILD_NUMBER}.0.0"
+def version = "${env.BUILD_NUMBER}.0"
+
+def artifactname = "artifact_name_one.jar"
+def packageName = "pkg_one_${env.BUILD_NUMBER}"
+def repoName = "repo_one"
+
+def artifactname2 = "artifact_name_two.jar"
+def packageName2 = "pkg_two_${env.BUILD_NUMBER}"
+def repoName2 = "repo_two"
+
+def artifactname3 = "artifact_name_three.jar"
+def packageName3 = "pkg_three_${env.BUILD_NUMBER}"
+def repoName3 = "repo_three"
+
+pipeline {
+    agent any
+
+    tools{
+        maven "Maven"
+    }
+    environment{
+        SCANNER_HOME=tool "sonarScanner"
+    }
+
+    stages {
+        stage('STAGE1_PARENT') {
+            stage('STAGE1_CHILD') {
+                steps {
+                    echo "IN STAGE1 CHILD"
+                }
+            }
+        }
+        stage('STAGE2_PARENT') {
+            parallel {
+                stage('STAGE2_PARALLEL_CHILD1') {
+                    stages {
+                        stage('STAGE2_PARALLEL_CHILD1.1') {
+                            steps {
+                                echo "IN STAGE2 PARALLEL CHILD 1.1"
+                                    sh 'mvn test'
+                                    snDevOpsArtifact(artifactsPayload: """{"artifacts": [{"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}","semanticVersion": "1.${env.BUILD_NUMBER}.0","repositoryName": "${repoName}"}],"stageName": "STAGE2_PARENT/STAGE2_PARALLEL_CHILD1/STAGE2_PARALLEL_CHILD1","branchName":"main"}""")
+                                    //snDevOpsChange()
+                            }
+                        }
+                    }
+                }
+                stage('STAGE2_PARALLEL_CHILD2') {
+                    steps{
+                        echo "IN STAGE2 PARALLE CHILD 2"
+                    }
+                }
+            }
+        }
+        stage('STAGE3_PARENT') {
+            stage('STAGE3_CHILD1'){
+                parallel {
+                    stage('STAGE3_PARALLEL_CHILD1.1') {
+                        steps{
+                            echo "IN STAGE3 PARALLEL CHILD 1.1"
+                            }
+                        }
+                    stage('STAGE3_PARALLEL_CHILD1.2') {
+                        steps{
+                            echo "IN STAGE3 PARALLE CHILD 1.2"
+                                sh 'mvn test'
+                                snDevOpsArtifact(artifactsPayload: """{"artifacts": [{"name": "${artifactname2}", "version": "1.${env.BUILD_NUMBER}","semanticVersion": "1.${env.BUILD_NUMBER}.0","repositoryName": "${repoName2}"}],"stageName": "STAGE3_PARENT/STAGE3_CHILD1/STAGE3_PARALLEL_CHILD1","branchName":"main"}""")
+                                snDevOpsChange()                            
+                            }
+                        }
+                    }
+            }
+        }
+    }
+}
