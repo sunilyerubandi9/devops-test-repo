@@ -25,10 +25,12 @@ pipeline {
 
     stages {
         stage('STAGE1_PARENT') {
-            stage('STAGE1_CHILD') {
-                steps {
-                    echo "IN STAGE1 CHILD"
-                }
+            stages{
+                stage('STAGE1_CHILD') {
+                    steps {
+                        echo "IN STAGE1 CHILD"
+                    }
+                }                
             }
         }
         stage('STAGE2_PARENT') {
@@ -53,22 +55,24 @@ pipeline {
             }
         }
         stage('STAGE3_PARENT') {
-            stage('STAGE3_CHILD1'){
-                parallel {
-                    stage('STAGE3_PARALLEL_CHILD1.1') {
-                        steps{
-                            echo "IN STAGE3 PARALLEL CHILD 1.1"
+            stages{
+                stage('STAGE3_CHILD1'){
+                    parallel {
+                        stage('STAGE3_PARALLEL_CHILD1.1') {
+                            steps{
+                                echo "IN STAGE3 PARALLEL CHILD 1.1"
+                                }
                             }
-                        }
-                    stage('STAGE3_PARALLEL_CHILD1.2') {
-                        steps{
-                            echo "IN STAGE3 PARALLE CHILD 1.2"
-                                sh 'mvn test'
-                                snDevOpsArtifact(artifactsPayload: """{"artifacts": [{"name": "${artifactname2}", "version": "1.${env.BUILD_NUMBER}","semanticVersion": "1.${env.BUILD_NUMBER}.0","repositoryName": "${repoName2}"}],"stageName": "STAGE3_PARENT/STAGE3_CHILD1/STAGE3_PARALLEL_CHILD1","branchName":"main"}""")
-                                snDevOpsChange()                            
+                        stage('STAGE3_PARALLEL_CHILD1.2') {
+                            steps{
+                                echo "IN STAGE3 PARALLE CHILD 1.2"
+                                    sh 'mvn test'
+                                    snDevOpsArtifact(artifactsPayload: """{"artifacts": [{"name": "${artifactname2}", "version": "1.${env.BUILD_NUMBER}","semanticVersion": "1.${env.BUILD_NUMBER}.0","repositoryName": "${repoName2}"}],"stageName": "STAGE3_PARENT/STAGE3_CHILD1/STAGE3_PARALLEL_CHILD1","branchName":"main"}""")
+                                    snDevOpsChange()                            
+                                }
                             }
-                        }
                     }
+                }            
             }
         }
     }
