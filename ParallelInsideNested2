@@ -31,31 +31,35 @@ pipeline {
         }
         stage('STAGE2_PARENT') {
             parallel {
-                stages{
-                    stage('STAGE2_PARALLEL_CHILD1') {
-                        parallel {
-                            stages{
-                                stage('STAGE2_PARALLEL_CHILD1.1') {
-                                    echo "IN STAGE2 PARALLEL CHILD 1.1"
-                                    sh 'mvn test'
-                                    snDevOpsArtifact(artifactsPayload: """{"artifacts": [{"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}","semanticVersion": "1.${env.BUILD_NUMBER}.0","repositoryName": "${repoName}"}],"stageName": "STAGE2_PARENT/STAGE2_PARALLEL_CHILD1/STAGE2_PARALLEL_CHILD1.1","branchName":"main"}""")
-                                    snDevOpsChange()
-                                }
-                                stage('STAGE2_PARALLEL_CHILD1.2') {
-                                    echo "IN STAGE2 PARALLEL CHILD 1.2"
+                stage('STAGE2_CHILD'){
+                    stages{
+                        stage('STAGE2_PARALLEL_CHILD1') {
+                            parallel {
+                                stages{
+                                    stage('STAGE2_PARALLEL_CHILD1.1') {
+                                        echo "IN STAGE2 PARALLEL CHILD 1.1"
+                                        sh 'mvn test'
+                                        snDevOpsArtifact(artifactsPayload: """{"artifacts": [{"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}","semanticVersion": "1.${env.BUILD_NUMBER}.0","repositoryName": "${repoName}"}],"stageName": "STAGE2_PARENT/STAGE2_PARALLEL_CHILD1/STAGE2_PARALLEL_CHILD1.1","branchName":"main"}""")
+                                        snDevOpsChange()
+                                    }
+                                    stage('STAGE2_PARALLEL_CHILD1.2') {
+                                        echo "IN STAGE2 PARALLEL CHILD 1.2"
+                                    }
                                 }
                             }
                         }
-                    }
-                    stage('STAGE2_PARALLEL_CHILD2') {
-                        echo "IN STAGE2 PARALLEL CHILD 2"
+                        stage('STAGE2_PARALLEL_CHILD2') {
+                            echo "IN STAGE2 PARALLEL CHILD 2"
+                        }
                     }
                 }
             }
         }
         stage('STAGE3') {
-            echo "IN STAGE3"
-            // INCLUDE PACKAGE WITH ALL ARTIFACTS
+            steps{
+                echo "IN STAGE3"
+                // INCLUDE PACKAGE WITH ALL ARTIFACTS            
+            }
         }
     }
 }
