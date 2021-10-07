@@ -42,6 +42,7 @@ pipeline {
             }
         }
                 stage('STAGE2_PARENT') {
+                      stages{
                       stage('STAGE2_CHILD') {
                       steps{
                         echo "IN STAGE2 CHILD"
@@ -50,6 +51,7 @@ pipeline {
                         //snDevOpsChange()
                 }
             }
-        }
+
+                      }        }
     }
 }
