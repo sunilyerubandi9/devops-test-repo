@@ -1,0 +1,57 @@
+def semanticVersion = "${env.BUILD_NUMBER}.0.0"
+def version = "${env.BUILD_NUMBER}.0"
+
+def artifactname = "artifact_name_one.jar"
+def packageName = "pkg_one_${env.BUILD_NUMBER}"
+def repoName = "repo_one"
+
+def artifactname2 = "artifact_name_two.jar"
+def packageName2 = "pkg_two_${env.BUILD_NUMBER}"
+def repoName2 = "repo_two"
+
+def artifactname3 = "artifact_name_three.jar"
+def packageName3 = "pkg_three_${env.BUILD_NUMBER}"
+def repoName3 = "repo_three"
+
+pipeline {
+    agent any
+
+    tools{
+        maven "Maven"
+    }
+    environment{
+        SCANNER_HOME=tool "sonarScanner"
+    }
+
+pipeline {
+    agent any
+    stages {
+        stage('STAGE1_PARENT') {
+            stage('STAGE1_CHILD1') {
+                stage('STAGE1_CHILD1.1') {
+                    steps {
+                        echo "IN STAGE1 CHILD 1.1"
+                    }
+                }
+            }
+        }
+        stage('STAGE2_PARENT') {
+            stage('STAGE2_CHILD1') {
+                stage('STAGE2_CHILD2.1') {
+                    steps {
+                        echo "IN STAGE2 CHILD 2.1"
+                    }
+                }
+            }
+        }
+        stage('STAGE3_PARENT') {
+            stage('STAGE3_CHILD1') {
+                stage('STAGE3_CHILD3.1') {
+                    steps {
+                        echo "IN STAGE3 CHILD 3.1"
+                    }
+                }
+            }
+        }
+    }
+}
