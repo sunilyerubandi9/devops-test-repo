@@ -22,9 +22,6 @@ pipeline {
     environment{
         SCANNER_HOME=tool "sonarScanner"
     }
-
-pipeline {
-    agent any
     stages {
         stage('STAGE1_PARENT') {
             stage('STAGE1_CHILD1') {
