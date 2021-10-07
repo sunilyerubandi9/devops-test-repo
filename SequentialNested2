@@ -22,32 +22,45 @@ pipeline {
     environment{
         SCANNER_HOME=tool "sonarScanner"
     }
+
     stages {
         stage('STAGE1_PARENT') {
+            stages{
             stage('STAGE1_CHILD1') {
+                stages{
                 stage('STAGE1_CHILD1.1') {
                     steps {
                         echo "IN STAGE1 CHILD 1.1"
                     }
                 }
+                }
+            }
             }
         }
         stage('STAGE2_PARENT') {
+            stages{
             stage('STAGE2_CHILD1') {
+                stages{
                 stage('STAGE2_CHILD2.1') {
                     steps {
                         echo "IN STAGE2 CHILD 2.1"
                     }
                 }
+                }
+            }
             }
         }
         stage('STAGE3_PARENT') {
+            stages{
             stage('STAGE3_CHILD1') {
+                stages{
                 stage('STAGE3_CHILD3.1') {
                     steps {
                         echo "IN STAGE3 CHILD 3.1"
                     }
                 }
+                }
+            }
             }
         }
     }
