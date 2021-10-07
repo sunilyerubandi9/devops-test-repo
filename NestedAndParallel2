@@ -74,6 +74,13 @@ pipeline {
                             sh 'mvn test'
                             snDevOpsArtifact(artifactsPayload: """{"artifacts": [{"name": "${artifactname2}", "version": "1.${env.BUILD_NUMBER}","semanticVersion": "1.${env.BUILD_NUMBER}.0","repositoryName": "${repoName2}"}],"stageName": "STAGE3_PARENT/STAGE3_PARALLEL_CHILD2","branchName":"main"}""")
                             snDevOpsChange()
+                            snDevOpsPackage(name: "${packageName}-${env.BUILD_NUMBER}", 
+                            artifactsPayload: """{
+                            "artifacts":[
+                            {"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}", "repositoryName": "${repoName}"},
+                            {"name": "${artifactname2}", "version": "1.${env.BUILD_NUMBER}", "repositoryName": "${repoName2}"}
+                            ], 
+                            "branchName":"main"}""")
                         }
                         post{
                                 success{
