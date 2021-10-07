@@ -1,0 +1,55 @@
+def semanticVersion = "${env.BUILD_NUMBER}.0.0"
+def version = "${env.BUILD_NUMBER}.0"
+
+def artifactname = "artifact_name_one.jar"
+def packageName = "pkg_one_${env.BUILD_NUMBER}"
+def repoName = "repo_one"
+
+def artifactname2 = "artifact_name_two.jar"
+def packageName2 = "pkg_two_${env.BUILD_NUMBER}"
+def repoName2 = "repo_two"
+
+def artifactname3 = "artifact_name_three.jar"
+def packageName3 = "pkg_three_${env.BUILD_NUMBER}"
+def repoName3 = "repo_three"
+
+pipeline {
+    agent any
+
+    tools{
+        maven "Maven"
+    }
+    environment{
+        SCANNER_HOME=tool "sonarScanner"
+    }
+
+    stages {
+
+        stage('STAGE1_PARENT') {
+            parallel {
+                      stage('STAGE1_PARALLEL_CHILD1') {
+                      steps{
+                        echo "IN STAGE1 PARALLEL CHILD 1"
+                        //snDevOpsChange()
+
+                    }
+                }
+                      stage('STAGE1_PARALLEL_CHILD2') {
+                      steps{
+                        echo "IN STAGE1 PARALLEL CHILD 2"
+                    }
+                }
+            }
+        }
+                stage('STAGE2_PARENT') {
+                      stage('STAGE2_CHILD') {
+                      steps{
+                        echo "IN STAGE2 CHILD"
+                        sh 'mvn test'
+                        snDevOpsArtifact(artifactsPayload: """{"artifacts": [{"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}","semanticVersion": "1.${env.BUILD_NUMBER}.0","repositoryName": "${repoName}"}],"stageName": "STAGE2_PARENT/STAGE2_CHILD","branchName":"main"}""")
+                        //snDevOpsChange()
+                }
+            }
+        }
+    }
+}
