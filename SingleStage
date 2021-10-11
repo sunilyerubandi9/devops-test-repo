@@ -1,0 +1,50 @@
+def semanticVersion = "${env.BUILD_NUMBER}.0.0"
+def version = "${env.BUILD_NUMBER}.0"
+
+def artifactname = "artifact_name_one.jar"
+def packageName = "pkg_one_${env.BUILD_NUMBER}"
+def repoName = "repo_one"
+
+def artifactname2 = "artifact_name_two.jar"
+def packageName2 = "pkg_two_${env.BUILD_NUMBER}"
+def repoName2 = "repo_two"
+
+def artifactname3 = "artifact_name_three.jar"
+def packageName3 = "pkg_three_${env.BUILD_NUMBER}"
+def repoName3 = "repo_three"
+
+pipeline {
+    agent any
+
+    tools{
+        maven "Maven"
+    }
+    environment{
+        SCANNER_HOME=tool "sonarScanner"
+    }
+
+    stages {
+        stage('SINGLE_STAGE') {
+
+                        steps{
+                            echo "IN SINGLE STAGE"
+                            sh 'mvn test'
+                            snDevOpsArtifact(artifactsPayload: """{"artifacts": [{"name": "${artifactname2}", "version": "1.${env.BUILD_NUMBER}","semanticVersion": "1.${env.BUILD_NUMBER}.0","repositoryName": "${repoName2}"}],"stageName": "SINGLE_STAGE","branchName":"main"}""")
+                            
+                            sleep 10
+
+                            snDevOpsPackage(name: "${packageName}-${env.BUILD_NUMBER}", 
+                            artifactsPayload: """{
+                            "artifacts":[
+                            {"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}", "repositoryName": "${repoName}"}
+                            ], 
+                            "branchName":"main"}""")
+
+                            sleep 10
+
+                            snDevOpsChange()
+                        }
+
+        }
+    }
+}
