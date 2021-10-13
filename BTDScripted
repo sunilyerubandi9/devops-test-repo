@@ -13,7 +13,7 @@ pipeline {
     stages {
 		  stage('Build') {
 			steps {
-                echo "build 1.1 executed"
+                echo "Build executed"
                 snDevOpsChange()
             }
         } // end of Build
@@ -26,6 +26,7 @@ pipeline {
 				
 		stage('Deploy'){
             steps{
+	    			snDevOpsArtifact(artifactsPayload: """{"artifacts": [{"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}","semanticVersion": "1.${env.BUILD_NUMBER}.0","repositoryName": "${repoName}"}],"branchName":"master"}""")
 				snDevOpsPackage(name: "${packageName}-${env.BUILD_NUMBER}", artifactsPayload: """{"artifacts":[{"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}", "repositoryName": "${repoName}"}], "branchName":"main"}""")
 				snDevOpsChange()
             }
