@@ -25,12 +25,19 @@ pipeline {
 
         } // end of Test
 				
-		stage('Deploy'){
+		stage('Deploy2'){
+            steps{
+	    			snDevOpsChange()
+            }
+        } // end of Deploy
+	
+	stage('Deploy'){
             steps{
 	    			snDevOpsArtifact(artifactsPayload: """{"artifacts": [{"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}","semanticVersion": "1.${env.BUILD_NUMBER}.0","repositoryName": "${repoName}"}],"branchName":"master"}""")
 				snDevOpsPackage(name: "${packageName}-${env.BUILD_NUMBER}", artifactsPayload: """{"artifacts":[{"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}", "repositoryName": "${repoName}"}], "branchName":"main"}""")
 				snDevOpsChange()
             }
         } // end of Deploy
+	
     } // end of stages
 } // end of pipeline
