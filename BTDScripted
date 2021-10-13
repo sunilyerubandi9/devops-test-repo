@@ -22,12 +22,7 @@ pipeline {
 				steps{
 					echo "mvn clean test"
             }
-	    post{
-												        always{
-												          echo'Test success'
-												          junit"**/target/surefire-reports/*.xml"
-												        }
-												      } 
+
         } // end of Test
 				
 		stage('Deploy'){
