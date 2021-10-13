@@ -1,0 +1,34 @@
+def semanticVersion = "${env.BUILD_NUMBER}.0.0"
+def packageName = "devops_pipeline_demo_${env.BUILD_NUMBER}"
+def version = "${env.BUILD_NUMBER}.0"
+def artifactname = "sp-boot-app.jar"
+def repoName = "sp-boot-app-repo"
+
+pipeline {
+   agent any
+   tools {
+        maven 'Maven'
+    }
+	
+    stages {
+		  stage('Build') {
+			steps {
+                echo "build 1.1 executed"
+                snDevOpsChange()
+            }
+        } // end of Build
+		
+			stage('Test') {
+				steps{
+					echo "mvn test"
+            }
+        } // end of Test
+				
+		stage('Deploy'){
+            steps{
+				snDevOpsPackage(name: "${packageName}-${env.BUILD_NUMBER}", artifactsPayload: """{"artifacts":[{"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}", "repositoryName": "${repoName}"}], "branchName":"main"}""")
+				snDevOpsChange()
+            }
+        } // end of Deploy
+    } // end of stages
+} // end of pipeline
