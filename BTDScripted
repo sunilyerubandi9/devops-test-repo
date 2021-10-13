@@ -23,7 +23,7 @@ pipeline {
 					echo "mvn clean test"
             }
 	    post{
-												        success{
+												        always{
 												          echo'Test success'
 												          junit"**/target/surefire-reports/*.xml"
 												        }
