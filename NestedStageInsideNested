@@ -116,7 +116,7 @@ pipeline {
 								          echo "Deploy 1.1.1 executed"
 				
 								          //snDevOpsChange()
-								          sonarSummaries()
+								          //sonarSummaries()
 								          snDevOpsArtifact(artifactsPayload: """{"artifacts": [{"name": "${artifactname3}", "version": "1.${env.BUILD_NUMBER}","semanticVersion": "1.${env.BUILD_NUMBER}.0","repositoryName": "${repoName3}"}],"stageName": "Deploy1/Deploy1.1/Deploy1.1.1","branchName":"master"}""")
 								          snDevOpsPackage(name: "${packageName3}", artifactsPayload: """{"artifacts":[{"name": "${artifactname3}", "version": "1.${env.BUILD_NUMBER}", "repositoryName": "${repoName3}"}],"stageName": "Deploy1/Deploy1.1/Deploy1.1.1", "branchName":"master"}""")
 								          
