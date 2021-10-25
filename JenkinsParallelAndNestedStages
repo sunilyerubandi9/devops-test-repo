@@ -59,7 +59,7 @@ pipeline {
 												      }
                               					              stage("Deploy1") 	      {
 												      steps {
-												        echo'CR1'
+												        //echo'CR1'
 												        snDevOpsChange()
 												      }
 												      }
