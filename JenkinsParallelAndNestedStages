@@ -47,19 +47,19 @@ pipeline {
 												        echo'nested_inside_parallel'
 												        sh'mvn test -Dtest="unittests.*" -Dpublish'
                                 									sleep 5
-													//junit"**/target/surefire-reports/*unittests.*.xml"
+													junit"**/target/surefire-reports/*.xml"
 													sleep 15
 												      }
 												      post{
 												        success{
 												          echo'Test1-success'
-												          junit"**/target/surefire-reports/*unittests.*.xml"
+												          junit"**/target/surefire-reports/*.xml"
 												        }
 												      }
 												      }
                               					              stage("Deploy1") 	      {
 												      steps {
-												        //echo'CR1'
+												        echo'CR1'
 												        snDevOpsChange()
 												      }
 												      }
@@ -74,9 +74,9 @@ pipeline {
 									        sh 'mvn test -Dtest="ppmtests.*" -Dpublish'
 									        echo'Test2 in progress'
 										sleep 5
-										//junit"**/target/surefire-reports/*ppmtests.*.xml"
-										//sleep 15
-									        //snDevOpsChange()
+										junit"**/target/surefire-reports/*.xml"
+										sleep 15
+									        snDevOpsChange()
 				          					//sonarSummaries()
 									      }
 									       post{
