@@ -88,7 +88,7 @@ pipeline {
 										 }
 							              stage("Deploy2") {
 									          steps {
-										      echo'CR2'
+										     echo'CR2'
 										     snDevOpsChange()
 										         }
 										    }
