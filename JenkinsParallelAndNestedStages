@@ -75,7 +75,7 @@ pipeline {
 									        echo'Test2 in progress'
 										sleep 5
 										//junit"**/target/surefire-reports/*ppmtests.*.xml"
-										sleep 15
+										//sleep 15
 									        //snDevOpsChange()
 				          					//sonarSummaries()
 									      }
