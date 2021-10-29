@@ -60,6 +60,7 @@ pipeline {
                               					              stage("Deploy1") 	      {
 												      steps {
 												        echo'CR1'
+													sleep 10
 												        snDevOpsChange()
 												      }
 												      }
@@ -89,6 +90,7 @@ pipeline {
 							              stage("Deploy2") {
 									          steps {
 										     echo'CR2'
+										     sleep 10
 										     snDevOpsChange()
 										         }
 										    }
