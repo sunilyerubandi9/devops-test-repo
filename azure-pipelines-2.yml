@@ -20,6 +20,7 @@ stages:
                 script: |
                   # Write your commands here                  
                   echo 'Hello world.'
+            
 
     - stage: Test
       jobs:
@@ -31,6 +32,19 @@ stages:
                 script: |
                   # Write your commands here                  
                   echo 'Hello world'
+
+            - task: PublishTestResults@2
+              inputs:
+                testResultsFormat: 'JUnit'
+                testResultsFiles: '**/TEST-*.xml'
+                testRunTitle: 'Job'
+                
+            - task: PublishTestResults@2
+              inputs:
+                testResultsFormat: 'JUnit'
+                testResultsFiles: '**/TEST-*.xml'
+                testRunTitle: 'Job'
+            
 
     - stage: Deploy
       jobs:
