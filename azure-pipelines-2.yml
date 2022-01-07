@@ -58,7 +58,7 @@ stages:
                   echo 'Hello world'
             - task: ServiceNow-DevOps-Agent-Artifact-Registration@1
               inputs:
-                connectedServiceName: 'onedotthirtythree-DevOpsADOProject4-ServiceNow DevOps Service Connection'
+                connectedServiceName: 'devopsqerp2-DevOpsADOProject4-ServiceNow DevOps Service Connection'
                 artifactsPayload: |
                   {
                       "artifacts": [
@@ -82,75 +82,3 @@ stages:
                   # Write your commands here                  
                   echo 'Hello world'
                   # Maven
-
-    - stage: S5
-      jobs:
-          - job: 'Job'
-            steps:
-            - task: Bash@3
-              inputs:
-                targetType: 'inline'
-                script: |
-                  # Write your commands here                  
-                  echo 'Hello world.'
-            
-
-    - stage: S6
-      jobs:
-          - job: 'Job'
-            steps:
-            - task: Bash@3
-              inputs:
-                targetType: 'inline'
-                script: |
-                  # Write your commands here                  
-                  echo 'Hello world'
-
-            - task: PublishTestResults@2
-              inputs:
-                testResultsFormat: 'JUnit'
-                testResultsFiles: '**/TEST-*.xml'
-                testRunTitle: 'Job'
-                
-            - task: PublishTestResults@2
-              inputs:
-                testResultsFormat: 'JUnit'
-                testResultsFiles: '**/TEST-*.xml'
-                testRunTitle: 'Job'
-            
-
-    - stage: S7
-      jobs:
-          - job: 'Job'
-            steps:
-            - task: Bash@3
-              inputs:
-                targetType: 'inline'
-                script: |
-                  # Write your commands here                  
-                  echo 'Hello world'
-            - task: ServiceNow-DevOps-Agent-Artifact-Registration@1
-              inputs:
-                connectedServiceName: 'onedotthirtythree-DevOpsADOProject4-ServiceNow DevOps Service Connection'
-                artifactsPayload: |
-                  {
-                      "artifacts": [
-                        {
-                            "name": "msnautomation-agent-registration-artifact.jar",
-                            "version": "1.$(Build.BuildId)",
-                            "semanticVersion": "1.$(Build.BuildId).0",
-                            "repositoryName": "MSNAutomation"
-                        }
-                      ]
-                  }            
-
-    - stage: S8
-      jobs:
-          - job: 'Job'
-            steps:
-            - task: Bash@3
-              inputs:
-                targetType: 'inline'
-                script: |
-                  # Write your commands here                  
-                  echo 'Hello world'
