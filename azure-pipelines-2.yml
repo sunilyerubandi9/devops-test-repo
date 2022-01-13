@@ -83,16 +83,3 @@ stages:
                   echo 'Hello world'
                   # Maven
 
-            - task: InvokeRESTAPI@1
-              inputs:
-                connectionType: 'connectedServiceName'
-                serviceConnection: 'devopsqerp2-DevOpsADOProject4-Generic Connection'
-                method: 'POST'
-                body: |
-                  {
-                      "buildNumber": "$(build.buildId)",
-                      "isMultiBranch": "true",
-                      "branchName": "$(build.sourceBranchName)"
-                  }
-                urlSuffix: '/api/sn_devops/v1/devops/orchestration/changeControl?toolId=4b60ea5287b84110b6acb846cebb35bf'
-                waitForCompletion: 'true'
