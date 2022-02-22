@@ -58,7 +58,7 @@ stages:
                   echo 'Hello world'
             - task: ServiceNow-DevOps-Agent-Artifact-Registration@1
               inputs:
-                connectedServiceName: 'ramaquebec-DevOpsADOProject4-ServiceNow DevOps Service Connection'
+                connectedServiceName: 'devopsqa12-DevOpsADOProject4-ServiceNow DevOps Service Connection'
                 artifactsPayload: |
                   {
                       "artifacts": [
