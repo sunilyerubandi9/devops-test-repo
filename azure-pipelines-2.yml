@@ -37,13 +37,13 @@ stages:
               inputs:
                 testResultsFormat: 'JUnit'
                 testResultsFiles: '**/TEST-*.xml'
-                testRunTitle: 'Job'
+                testRunTitle: 'Test1'
                 
             - task: PublishTestResults@2
               inputs:
                 testResultsFormat: 'JUnit'
                 testResultsFiles: '**/TEST-*.xml'
-                testRunTitle: 'Job'
+                testRunTitle: 'Test2'
             
 
     - stage: S3
