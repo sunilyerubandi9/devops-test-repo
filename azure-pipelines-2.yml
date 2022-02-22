@@ -25,6 +25,7 @@ stages:
     - stage: S2
       jobs:
           - job: 'S2Job'
+            dependsOn: S1Job
             steps:
             - task: Bash@3
               inputs:
@@ -49,6 +50,7 @@ stages:
     - stage: S3
       jobs:
           - job: 'S3Job'
+            dependsOn: S2Job
             steps:
             - task: Bash@3
               inputs:
@@ -74,6 +76,7 @@ stages:
     - stage: S4
       jobs:
           - job: 'S4Job'
+            dependsOn: S3Job
             steps:
             - task: Bash@3
               inputs:
