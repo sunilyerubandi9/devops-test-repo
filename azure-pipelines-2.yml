@@ -12,7 +12,7 @@ pool:
 stages:
     - stage: S1
       jobs:
-          - job: 'Job'
+          - job: 'S1Job'
             steps:
             - task: Bash@3
               inputs:
@@ -24,7 +24,7 @@ stages:
 
     - stage: S2
       jobs:
-          - job: 'Job'
+          - job: 'S2Job'
             steps:
             - task: Bash@3
               inputs:
@@ -48,7 +48,7 @@ stages:
 
     - stage: S3
       jobs:
-          - job: 'Job'
+          - job: 'S3Job'
             steps:
             - task: Bash@3
               inputs:
@@ -73,7 +73,7 @@ stages:
 
     - stage: S4
       jobs:
-          - job: 'Job'
+          - job: 'S4Job'
             steps:
             - task: Bash@3
               inputs:
