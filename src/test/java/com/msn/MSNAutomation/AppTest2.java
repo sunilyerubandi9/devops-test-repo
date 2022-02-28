@@ -2,7 +2,7 @@ package com.msn.MSNAutomation;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -44,15 +44,7 @@ public class AppTest2
     	System.out.println("Added setUp() method");
     }
     
-    @Test
-    public void test1() {
-    	System.out.println("Added test1() method");
-    }
-    
-    @Test
-    public void test2() {
-    	System.out.println("Added test2() method");
-    }
+
     
     @After
     public void tearDown() {
