@@ -49,6 +49,11 @@ public class AppTest2
     	System.out.println("Added test1() method");
     }
     
+    @Test
+    public void test2() {
+    	System.out.println("Added test2() method");
+    }
+    
     @After
     public void tearDown() {
     	System.out.println("Added tearDown() method");
