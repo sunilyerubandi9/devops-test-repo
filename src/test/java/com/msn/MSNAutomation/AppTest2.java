@@ -43,9 +43,7 @@ public class AppTest2
     public void setUp() {
     	System.out.println("Added setUp() method");
     }
-    
 
-    
     @After
     public void tearDown() {
     	System.out.println("Added tearDown() method");
