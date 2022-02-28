@@ -15,7 +15,7 @@ pipeline {
 			steps {
                 echo "Build executed"
                 snDevOpsChange()
-		echo "Change completed"
+		echo "Change approved"
             }
         } // end of Build
 		
