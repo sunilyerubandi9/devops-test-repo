@@ -45,14 +45,28 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      
+      - name: List current directory
+        run: ls -a
+        
       - name: Run Tests with Maven
-        run: |
-            ls -l
-            mvn clean test
+        run: mvn -B test --file pom.xml
+
+#         run: |
+#             ls -l
+#             mvn clean test
             
         # run: mvn test
         # mvn -B test --file ./devops-test-repo/pom.xml
         
+      - name: What's in the target directory
+        run: |
+            cd target
+            ls -a
+            
       - name: Sonarcloud Scan
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}  # Needed to get PR information, if any
