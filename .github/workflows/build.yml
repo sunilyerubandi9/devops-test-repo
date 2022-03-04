@@ -49,6 +49,8 @@ jobs:
         run: |
             cd ../
             ls -l
+            cd devops-test-repo/
+            ls -l
             mvn clean test
             
         # run: mvn test
