@@ -1,0 +1,120 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Java CI with Maven
+
+#on:
+#   push:
+#     branches: [ main ]
+#   pull_request:
+#     branches: [ main ]
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     types: [opened, synchronize, reopened]
+
+on: workflow_dispatch  
+    
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache Maven packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+  test:
+    name: Test
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Tests with Maven
+        #run: mvn -B test --file pom.xml
+        run: mvn test
+        
+      - name: Sonarcloud Scan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=pramaraju96_MSNAutomation
+
+      - name: ServiceNow DevOps Artifact Registration
+        # You may pin to the exact commit or the version.
+        # uses: rapdev-io/sn-devops-artifact@efb54c4cdf2ec4591b8c837f41843ac4e0a90801
+        uses: rapdev-io/sn-devops-artifact@v2.0.1
+        with:
+          # DevOps Integration User Name
+          devops-integration-user-name: devops.integration.user
+          # DevOps Integration User Pass
+          devops-integration-user-pass: DevOps1!
+          # ServiceNow Instance Name (e.g.: rapdevio)
+          instance-name: onedotthirtythree
+          # Orchestration tool id
+          tool-id: 
+          # Github context
+          context-github: 
+          # List of artifacts to register
+          artifacts:       
+      
+      - name: ServiceNow DevOps Artifact Package
+        # You may pin to the exact commit or the version.
+        # uses: rapdev-io/sn-devops-package@5595518a072f040b0795e18f0e1fae091a05ed07
+        uses: rapdev-io/sn-devops-package@v2.0.1
+        with:
+          # DevOps Integration User Name
+          devops-integration-user-name: devops.integration.user
+          # DevOps Integration User Pass
+          devops-integration-user-pass: DevOps1!
+          # ServiceNow Instance Name (e.g.: rapdevio)
+          instance-name: onedotthirtythree
+          # Orchestration tool id
+          tool-id: 
+          # Github context
+          context-github: 
+          # List of artifacts to register
+          artifacts: 
+          # Package name
+          name: # optional
+  deploy:
+    name: Deploy
+    needs: test
+    runs-on: ubuntu-latest
+    steps:     
+      - name: ServiceNow DevOps Change
+        # You may pin to the exact commit or the version.
+        # uses: rapdev-io/sn-devops-change@d81ab3123ec5da61f1f2d92d5b3661d9e0d66f35
+        uses: rapdev-io/sn-devops-change@v2.0.1
+        with:
+          # DevOps Integration User Name
+          devops-integration-user-name: 
+          # DevOps Integration User Pass
+          devops-integration-user-pass: 
+          # ServiceNow Instance Name (e.g.: rapdevio)
+          instance-name: 
+          # Orchestration tool id
+          tool-id: 
+          # Github context
+          context-github: 
+          # Callback repo
+          callback-repo: 
+          # Callback pipeline ID
+          callback-pipeline-id: 
+          # Callback params
+          callback-params: 
