@@ -48,9 +48,11 @@ jobs:
       - name: Run Tests with Maven
         run: |
             cd ../
+            ls -l
             mvn clean test
-            # mvn -B test --file ./devops-test-repo/pom.xml
+            
         # run: mvn test
+        # mvn -B test --file ./devops-test-repo/pom.xml
         
       - name: Sonarcloud Scan
         env:
