@@ -47,8 +47,6 @@ jobs:
     steps:
       - name: Run Tests with Maven
         run: |
-            cd ../
-            cd devops-test-repo/devops-test-repo
             ls -l
             mvn clean test
             
