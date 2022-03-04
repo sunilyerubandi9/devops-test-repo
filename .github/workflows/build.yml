@@ -46,8 +46,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run Tests with Maven
-        #run: mvn -B test --file pom.xml
-        run: mvn test
+        run: mvn -B test --file *.pom.xml
+        # run: mvn test
         
       - name: Sonarcloud Scan
         env:
