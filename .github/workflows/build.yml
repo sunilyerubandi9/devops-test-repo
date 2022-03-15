@@ -81,7 +81,7 @@ jobs:
           # DevOps Integration User Name
           devops-integration-user-name: devops.integration.user
           # DevOps Integration User Pass
-          devops-integration-user-pass: DevOps1!
+          devops-integration-user-pass: 
           # ServiceNow Instance Name (e.g.: rapdevio)
           instance-name: onedotthirtythree
           # Orchestration tool id
@@ -99,7 +99,7 @@ jobs:
           # DevOps Integration User Name
           devops-integration-user-name: devops.integration.user
           # DevOps Integration User Pass
-          devops-integration-user-pass: DevOps1!
+          devops-integration-user-pass: 
           # ServiceNow Instance Name (e.g.: rapdevio)
           instance-name: onedotthirtythree
           # Orchestration tool id
