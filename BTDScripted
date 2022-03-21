@@ -13,7 +13,7 @@ pipeline {
     stages {
 		  stage('Build') {
 			steps {
-                echo "Build executed"
+                echo "Build executed..."
                 snDevOpsChange()
 		echo "Change approved and implemented"
             }
