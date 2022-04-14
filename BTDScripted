@@ -31,7 +31,7 @@ pipeline {
             steps{
 	    			snDevOpsChange()
             }
-        } // end of Deploy
+        } // end of Deploy stage
 	
 	stage('Deploy'){
             steps{
