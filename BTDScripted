@@ -40,7 +40,7 @@ pipeline {
 				snDevOpsPackage(name: "${packageName}-${env.BUILD_NUMBER}", artifactsPayload: """{"artifacts":[{"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}", "repositoryName": "${repoName}"}], "branchName":"main"}""")
 				snDevOpsChange()
             }
-        } // end of Deploy
+        } // end of Deploy stage
 	
     } // end of stages
 } // end of pipeline
