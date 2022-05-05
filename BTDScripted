@@ -28,7 +28,7 @@ pipeline {
         } // end of Test
 				
 		stage('Deploy2'){
-            steps{
+            step
 	    			snDevOpsChange()  
             }
         } // end of Deploy stage
