@@ -29,7 +29,7 @@ pipeline {
 				
 		stage('Deploy2'){
             step
-	    			snDevOpsChange()  
+	    			snDevOpsChange()     
             }
         } // end of Deploy stage
 	
