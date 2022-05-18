@@ -1,0 +1,85 @@
+name: Reusable WhiteSource Gate
+
+on:
+  workflow_call:
+    secrets:
+      WSS_USERKEY:
+        description: whitesource scan userkey
+        required: true
+      WSS_PROJECTTOKEN:
+        description: whitesource scan project token
+        required: true
+      WSS_LICENSESCORE:
+        description: licesne score threshold
+        required: false
+permissions:
+  id-token: write
+  contents: read
+env:
+  BUCKET_NAME : "automation-poc"
+  AWS_REGION : "us-east-1"
+  SESSION_NAME: "samplerolesession"
+
+jobs:
+  whitesource-gate:
+    name: WhiteSource Quality Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check WhiteSource vulnerabilities
+        run: |
+          curl --location --request POST 'https://shell.whitesourcesoftware.com/api/v1.3' --header 'Content-Type: application/json' --data-raw '{"requestType": "getProjectAlerts", "userKey": "${{ secrets.WSS_USERKEY }}", "projectToken": "${{ secrets.WSS_PROJECTTOKEN }}"}' -o resp.json
+          export COUNT=$(cat resp.json | jq '.alerts[] .vulnerability.cvss3_severity' | grep high | wc -l)
+          if [[ ( ${COUNT} > 0 ) ]]; then
+            echo "vulnerability=true" >> $GITHUB_ENV
+            echo "Failed vulnerability gate check"
+          else
+            echo "vulnerability=false" >> $GITHUB_ENV
+            echo "Passed vulnerability gate check"
+          fi
+      - name: Initialize license score threshold
+        run: |
+          if [ -z "${{secrets.WSS_LICENSESCORE}}" ]; then
+            echo "licensescore=70" >> $GITHUB_ENV
+          else
+            echo "secrets.licensescore is not null."
+            echo "licensescore=${{secrets.WSS_LICENSESCORE}}" >> $GITHUB_ENV
+          fi
+          echo "Set license scorethreshold to ${{env.licensescore}}"
+      - name: Run WhiteSource License check
+        run: |
+          curl --location --request POST 'https://shell.whitesourcesoftware.com/api/v1.3' --header 'Content-Type: application/json' --data-raw '{"requestType": "getProjectDueDiligenceReport", "userKey": "${{ secrets.WSS_USERKEY }}", "projectToken": "${{ secrets.WSS_PROJECTTOKEN }}", "format" : "json"}' -o risk.json
+          export COUNT=$(cat risk.json | jq '.licenses[] .riskScore |select( . >= ${{env.licensescore}} )' | wc -l)
+          if [[ ( ${COUNT} > 0 ) ]]; then
+            echo "violation count = $COUNT"
+            echo "license=true" >> $GITHUB_ENV
+            echo "Failed open source license check"
+          else
+            echo "license=false" >> $GITHUB_ENV
+            echo "Passed open source license check"
+          fi
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::920897381718:role/github-oidc-role
+          role-session-name: ${{env.SESSION_NAME}}
+          aws-region: ${{env.AWS_REGION}}
+
+      - name: WhiteSource Quality Gate Check
+        run: |
+          echo "Create report..."
+          curl --location --request POST 'https://shell.whitesourcesoftware.com/api/v1.3' --header 'Content-Type: application/json' --data-raw '{"requestType": "getProjectRiskReport", "userKey": "${{ secrets.WSS_USERKEY }}", "projectToken": "${{ secrets.WSS_PROJECTTOKEN }}"}' -o whitesource_scan.pdf
+          echo "license=${{env.license}}"
+          echo "vulnerablity=${{env.vulnerability}}"
+          echo "Copy report to s3..."
+          if [[ (${{env.vulnerability}} == 'false') ]] ; then  # [[ (${{env.license}} == 'false') ]] && 
+            echo 'Passed WhiteSource quality gate check'
+            aws s3 cp whitesource_scan.pdf s3://${{env.BUCKET_NAME}}/success/
+          else
+            echo 'Failed WhiteSource quality gate check'
+            aws s3 cp whitesource_scan.pdf s3://${{env.BUCKET_NAME}}/failure/
+            cat resp.json | jq '.alerts[] .vulnerability | select( .cvss3_severity == "high")' | jq -s '.[0:2]'
+            echo "....."
+            exit 1
+          fi
+      
+          

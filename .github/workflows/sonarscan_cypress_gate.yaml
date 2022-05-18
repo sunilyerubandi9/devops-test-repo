@@ -1,0 +1,162 @@
+name: Reusable Sonarscan Gate
+
+on:
+  workflow_call:
+    secrets:
+      SONAR_TOKEN:
+        description: sonarscan token
+        required: true
+      SONARSCAN_PROJECTKEY:
+        description: project key
+        required: true
+      TEST_COVERAGE:
+        description: unit test coverage gate
+        required: false
+      E2E_TEST_COVERAGE:
+        description: e2e test coverage threshold
+        required: false
+    inputs:
+      args-branch:
+        description: branch name
+        type: string
+        default: main
+        required: false
+env:
+  BUCKET_NAME : "automation-poc"
+  AWS_REGION : "us-east-1"
+  SESSION_NAME: "samplerolesession"
+  #COVERAGE_GATE: "5"
+  #E2E_COVERAGE_GATE: "30"
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  sonarqube-gate:
+    name: SonarQube Quality Gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::920897381718:role/github-oidc-role
+          role-session-name: ${{ env.SESSION_NAME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Initialize test coverage threshold
+        run: |
+          if [ -z "${{secrets.TEST_COVERAGE}}" ]; then
+            echo "coverage_gate=80" >> $GITHUB_ENV
+          else
+            echo "secrets.TEST_COVERAGE is not null."
+            echo "coverage_gate=${{secrets.TEST_COVERAGE}}" >> $GITHUB_ENV
+          fi
+          echo "set coverage_gate to ${{env.coverage_gate}}"
+
+          if [ -z "${{secrets.E2E_TEST_COVERAGE}}" ]; then
+            echo "e2e-coverage-gate=60" >> $GITHUB_ENV
+          else
+            echo "secrets.E2E_TEST_COVERAGE is not null."
+            echo "e2e-coverage-gate=${{secrets.E2E_TEST_COVERAGE}}" >> $GITHUB_ENV
+          fi
+          echo "set e2e-coverage-gate to ${{env.e2e-coverage_gate}}"
+
+          echo "report-path=-Dsonar.branch.name=${{inputs.args-branch}}" >> $GITHUB_ENV
+          echo "report path is ${{env.report-path}}"
+
+      - name: Unit testing and E2E testing
+        run: |
+          sudo npm install --global yarn
+          yarn add cypress --dev
+          yarn add @cypress/instrument-cra
+          yarn add @cypress/code-coverage
+          echo "run unit test..."
+          yarn test:unit
+          echo "finish unit test"
+          yarn start &
+          sleep 30
+          curl http://localhost:3000
+          yarn cypress:headless
+          echo "finish E2E test"
+          export coverage=$(cat cypress-coverage/coverage-summary.json| jq '.total.lines.pct')
+          echo "e2e_coverage=$coverage" >> $GITHUB_ENV
+
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_HOST_URL: https://sesvc.shell.com
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            ${{env.report-path}}
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            
+      - name: Generate SonarQube Scan Report
+        run: |
+          echo "branch is ${{inputs.args-branch}}"
+          curl -u ${{secrets.SONAR_TOKEN}}: "https://sesvc.shell.com/api/qualitygates/project_status?projectKey=${{secrets.SONARSCAN_PROJECTKEY}}&branch=${{inputs.args-branch}}" -o sonarqube_scan.json
+          # curl -u ${{secrets.SONAR_TOKEN}}: "https://sesvc.shell.com/api/governance_reports/download?componentKey=${{secrets.SONARSCAN_PROJECTKEY}}&branch=${{inputs.args-branch}}" -o sonarqube_scan.pdf
+          export status=$(cat sonarqube_scan.json| jq -r '.projectStatus.status')
+          echo "Copy report to s3..."
+          if [[ (${status} == 'ERROR') ]]; then 
+            aws s3 cp sonarqube_scan.json s3://${{env.BUCKET_NAME}}/failure/
+          else
+            aws s3 cp sonarqube_scan.json s3://${{env.BUCKET_NAME}}/success/
+          fi
+          echo "result_status=${status}" >> $GITHUB_ENV
+
+      - name: Check Test Coverage
+        run: |
+          curl -u ${{secrets.SONAR_TOKEN}}: "https://sesvc.shell.com/api/measures/component?s=qualifier%2Cname&component=${{secrets.SONARSCAN_PROJECTKEY}}&metricKeys=ncloc%2Ccoverage%2Cduplicated_lines_density" -o coverage.json
+          echo "Check unit test coverage..."
+          export coverage=$(cat coverage.json| jq -r '.component.measures[] | select (.metric=="coverage")|.value')
+          echo "Unit test coverage is ${coverage}"
+          echo "Unit test coverage threshold is ${{env.coverage_gate}}"
+          if [[ $(printf "%.0f\n" $coverage) < ${{env.coverage_gate}} ]]; then
+            echo "Failed unit test coverage"
+            export unit_test_pass='false'
+            echo "Copy report json to s3..."
+            aws s3 cp coverage.json s3://${{env.BUCKET_NAME}}/failure/unit-test-summary.json
+          else 
+            echo "Passed unit test coverage"
+            export unit_test_pass='true'
+            echo "Copy report json to s3..."
+            aws s3 cp coverage.json s3://${{env.BUCKET_NAME}}/success/unit-test-summary.json
+          fi
+          echo "check E2E test coverage..."
+          echo "E2E test coverage is ${{env.e2e_coverage}}"
+          echo "E2E test coverage threshold is ${{env.e2e-coverage-gate}}"
+          echo "Copy e2e-summary.json to s3..."
+          if [[ $(printf "%.0f\n" ${{env.e2e_coverage}}) -lt ${{env.e2e-coverage-gate}}  ]]; then
+            echo "Failed E2E test coverage"
+            export e2e_test_pass='false'
+            aws s3 cp cypress-coverage/coverage-summary.json s3://${{env.BUCKET_NAME}}/failure/e2e-summary.json
+          else 
+            echo "Passed E2E test coverage"
+            export e2e_test_pass='true'
+            aws s3 cp cypress-coverage/coverage-summary.json s3://${{env.BUCKET_NAME}}/success/e2e-summary.json
+          fi
+          echo "unit_test_pass=${unit_test_pass}"
+          echo "e2e_test_pass=${e2e_test_pass}"
+          if [[ (${unit_test_pass} == 'false') ]] || [[ (${e2e_test_pass} == 'false') ]]; then 
+            echo 'Failed test coverage quality gate'
+            exit 1
+          else
+            echo 'Passed test coverage quality gate'
+          fi
+      - name: SonarQube Quality Gate Check
+#        uses: sonarsource/sonarqube-quality-gate-action@master
+#        timeout-minutes: 5
+#        env:
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
+        run: |
+          if [[ (${{env.result_status}} == 'ERROR') ]]; then 
+            echo 'Failed Sonarque quality gate check'
+            exit 1
+          else
+            echo 'Passed Sonarque quality gate check'
+          fi

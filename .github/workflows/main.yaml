@@ -1,0 +1,90 @@
+name: Main
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy-dev:
+        description: "Whether or not to deploy branch to the dev environment"
+        default: "true"
+        required: false
+  push:
+    branches:
+      - "**"
+    tags:
+      - "v*"
+
+jobs:
+  lint:
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+          cache: yarn
+      - name: Install Deps
+        run: yarn install
+
+      - name: Copy Example .env
+        run: cp .env.example .env
+      - name: Run Linting
+        run: yarn lint
+
+  sonarqube-gate:
+    name: SonarQube Gate Check
+    uses: shellagilehub/exampleapp-api/.github/workflows/sonarscan_cypress_gate.yaml@features/wss_cicd_integration
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONARSCAN_PROJECTKEY: ${{ secrets.SONARSCAN_PROJECTKEY }}
+      TEST_COVERAGE: ${{ secrets.TEST_COVERAGE }}
+      E2E_TEST_COVERAGE: ${{ secrets.E2E_TEST_COVERAGE }}
+    with:
+      args-branch: ${GITHUB_REF_NAME}
+
+  deploy-dev:
+    name: Deploy Dev
+    needs:
+      - lint
+      - sonarqube-gate
+    runs-on: ubuntu-latest
+    environment: deploy-dev
+    steps:
+      - name: Deploy to Dev environment
+        run: |
+          echo "Deployed to Dev environment successfully"
+
+  whitesource-gate:
+    name: WhiteSource Gate Check
+    needs:
+      - deploy-dev
+    uses: shellagilehub/exampleapp-api/.github/workflows/wss_gate.yaml@features/wss_cicd_integration
+    secrets:
+      WSS_USERKEY: ${{ secrets.WSS_USERKEY }}
+      WSS_PROJECTTOKEN: ${{ secrets.WSS_PROJECTTOKEN }}
+
+  deploy-uat:
+    name: Deploy UAT
+    needs:
+      - lint
+      - deploy-dev
+      - whitesource-gate
+    runs-on: ubuntu-latest
+    environment: deploy-uat
+    steps:
+      - name: Deploy to UAT environment
+        run: |
+          echo "Deployed to UAT environment successfully"
+
+  deploy-prod:
+    name: Deploy Prod
+    needs:
+      - deploy-uat
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: deploy-prod
+    steps:
+      - name: Deploy to UAT environment
+        run: |
+          echo "Deployed to Prod environment successfully"
