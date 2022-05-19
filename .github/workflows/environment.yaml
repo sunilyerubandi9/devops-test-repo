@@ -42,7 +42,7 @@ jobs:
         run: mvn clean install -DskipTests=true
       
   deploy:
-    environment: dev
+    environment: DEV
     needs: integrationTest
     name: Deploy
     runs-on: ubuntu-latest
