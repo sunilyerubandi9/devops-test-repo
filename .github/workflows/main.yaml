@@ -7,11 +7,11 @@ on:
         description: "Whether or not to deploy branch to the dev environment"
         default: "true"
         required: false
-  push:
-    branches:
-      - "**"
-    tags:
-      - "v*"
+#   push:
+#     branches:
+#       - "**"
+#     tags:
+#       - "v*"
 
 jobs:
   lint:
