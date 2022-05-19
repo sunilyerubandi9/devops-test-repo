@@ -2,11 +2,11 @@ name: Main
 
 on:
   workflow_dispatch:
-    inputs:
-      deploy-dev:
-        description: "Whether or not to deploy branch to the dev environment"
-        default: "true"
-        required: false
+#     inputs:
+#       deploy-dev:
+#         description: "Whether or not to deploy branch to the dev environment"
+#         default: "true"
+#         required: false
 #   push:
 #     branches:
 #       - "**"
