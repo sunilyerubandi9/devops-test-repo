@@ -34,7 +34,7 @@ jobs:
 
   sonarqube-gate:
     name: SonarQube Gate Check
-    uses: shellagilehub/exampleapp-api/.github/workflows/sonarscan_cypress_gate.yaml@features/wss_cicd_integration
+    uses: pramaraju96/devops-test-repo/.github/workflows/sonarscan_cypress_gate.yaml@features/wss_cicd_integration
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       SONARSCAN_PROJECTKEY: ${{ secrets.SONARSCAN_PROJECTKEY }}
@@ -59,7 +59,7 @@ jobs:
     name: WhiteSource Gate Check
     needs:
       - deploy-dev
-    uses: shellagilehub/exampleapp-api/.github/workflows/wss_gate.yaml@features/wss_cicd_integration
+    uses: pramaraju96/devops-test-repo/.github/workflows/wss_gate.yaml@features/wss_cicd_integration
     secrets:
       WSS_USERKEY: ${{ secrets.WSS_USERKEY }}
       WSS_PROJECTTOKEN: ${{ secrets.WSS_PROJECTTOKEN }}
