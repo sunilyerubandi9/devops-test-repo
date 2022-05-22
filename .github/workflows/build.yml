@@ -73,6 +73,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=pramaraju96_MSNAutomation
 
+
       - name: Sonar Cloud Analysis
         if: success() # always() failure() success()
         run: >
@@ -89,7 +90,7 @@ jobs:
             SONAR_ORG_KEY: ${{ secrets.SONAR_ORG_KEY }}
             
       - name: ServiceNow DevOps Sonar Scan Results
-        uses: ServiceNow/servicenow-devops-sonar/@main
+        uses: ServiceNow/servicenow-devops-sonar@main
         with:
           devops-integration-user-name: ${{ secrets.SN_DEVOPS_USER }}
           devops-integration-user-password: ${{ secrets.SN_DEVOPS_PASSWORD }}
@@ -99,7 +100,8 @@ jobs:
           context-github: ${{ toJSON(github) }}
           sonar-host-url: ${{ secrets.SONAR_URL }}
           sonar-project-key: ${{ secrets.SONAR_PROJECT_KEY }}
-          sonar-org-key: ${{ secrets.SONAR_ORG_KEY }}
+          #sonar-org-key: ${{ secrets.SONAR_ORG_KEY }}
+
       - name: Run JUnit Tests
         run: mvn test -Dmaven.test.failure.ignore=true surefire-report:report
         
