@@ -100,7 +100,7 @@ jobs:
           context-github: ${{ toJSON(github) }}
           sonar-host-url: ${{ secrets.SONAR_URL }}
           sonar-project-key: ${{ secrets.SONAR_PROJECT_KEY }}
-          #sonar-org-key: ${{ secrets.SONAR_ORG_KEY }}
+          sonar-org-key: ${{ secrets.SONAR_ORG_KEY }}
 
       - name: Run JUnit Tests
         run: mvn test -Dmaven.test.failure.ignore=true surefire-report:report
