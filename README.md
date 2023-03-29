@@ -6,7 +6,4 @@ playbook
 
 Practice github 
 
-Testing
-March 29
-/jira testing -git
 
