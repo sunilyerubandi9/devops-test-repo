@@ -9,4 +9,4 @@ Practice github
 Testing
 March 29
 
-Associate work item with commit (Jira and Github)
+Associate work item with commit (Jira and Github, ADO)
